@@ -14,6 +14,12 @@ use yii\filters\VerbFilter;
  */
 class PersonController extends PersonsController
 {
+
+    // CORS Disabled.
+    public function init(){
+        $this->enableCsrfValidation = false;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -123,5 +129,68 @@ class PersonController extends PersonsController
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }    
+    }
+    
+    // REST API
+
+    public function actionList($id = null) 
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (!isset($id)) {
+            $persons = Person::find()->all(); // As it's currently being called only on one place, no need to add a method like findModel.
+        } else {
+            $persons = $this->findModel($id);
+        }
+
+        $response->data = $persons;
+        return $response;
+    }
+
+    public function actionAdd()
+    {
+        $request = Yii::$app->request;
+        $post = $request->post();
+
+        $person = new Person();
+        $person->first_name = $post['first_name'];
+        $person->last_name = $post['last_name'];
+        $person->save();
+
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+        $response->data = 'Created';
+
+        return $response;
+    }
+
+    public function actionRemove($id) 
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+
+        $this->findModel($id);
+
+        $response->data = 'Removed';
+        return $response;
+    }
+
+    public function actionModify($id)
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+        
+        $request = Yii::$app->request;
+        $post = $request->post();
+
+        $person = $this->findModel($id);
+        $person->first_name = $post['first_name'];
+        $person->last_name = $post['last_name'];
+        $person->save();
+
+        $response->data = 'Updated';
+
+        return $response;
+    }
 }

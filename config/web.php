@@ -51,6 +51,13 @@ $config = [
             'enableStrictParsing' => false,
             'showScriptName' => false,
             'rules' => [
+                'person/list/<id>' => 'person/list',
+                'POST person/add' => 'person/add',
+                'DELETE person/remove/<id>' => 'person/remove',
+                'PUT person/<id>' => 'person/modify',
+            ],
+
+            /*'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
@@ -58,7 +65,7 @@ $config = [
                     ],         
                     'pluralize' => false,
                 ],
-            ],
+            ],*/
         ],
     ],
     'params' => $params,
